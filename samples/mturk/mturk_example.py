@@ -39,19 +39,17 @@ resp = vc.call('hit_types', 'register', id=hit_type_id)
 # now the hit type has an mturk id: resp.content['mturk-id']
 
 ## set up a few example hits
-# example thumbnails and image ids
-example_ids = [4001, 4002, 4003]
 image_ids = [[4005, 4006, 4007, 4008, 4009, 4010],
              [5005, 5006, 5007, 5008, 5009, 5010]]
 # set up and register hits
 hit_ids = []
-example_ids_str = "[" + \
-    ",".join([('"http://s3.amazonaws.com/visipedia/images/%d/medium.jpg"' % id) \
-              for id in example_ids]) + "]"
 for id_set in image_ids:
     image_ids_str = "[" + ",".join([str(id) for id in id_set]) + "]"
-    params = vis.yaml_field({"image_ids" : image_ids_str, 
-                             "image_thumbs" : example_ids_str})
+    image_thumbs_str = "[" + \
+        ",".join([("'http://s3.amazonaws.com/visipedia/images/%d/thumb.jpg'" % id) \
+        for id in id_set]) + "]"
+    params = vis.yaml_field({ "image_ids" : image_ids_str,
+                              "image_thumbs" : image_thumbs_str })
     resp = vc.call('hits', 'create', 
                    params={'hit_type_id' : hit_type_id,
                            'annotation_instance_id' : ANN_INST_ID,
@@ -61,6 +59,7 @@ for id_set in image_ids:
                            'parameters' : params,
                            'register' : 1})
     hit_ids.append(resp.content['id'])
+
 # find out more info about your hits calling the show action
 for hit_id in hit_ids:
     resp = vc.call('hits', 'show', id=hit_id)
@@ -68,4 +67,11 @@ for hit_id in hit_ids:
 
 ## check for assignments
 for hit_id in hit_ids:
-    resp = vc.call('hits', 'get_assignments', id=4072)
+    resp = vc.call('hits', 'get_assignments', id=hit_id)
+
+## download assignment results using 'image_assignments'
+resp = vc.call('image_assignments',
+               params={ 'hit_type_id' : hit_type_id })
+
+## or download full assignments using 'assigments'
+resp = vc.call('assignments', params={'hit_id' : HIT_ID})

@@ -27,9 +27,11 @@ annotation_type_version_id = resp.content['id']
 
 ## create an instance for the annotation type
 # format the parameters for the instance
-prm = vis.yaml_field({"object_name" : 'Foo',
-                      "wikipedia_url" : "http://en.wikipedia.org/wiki/Foo",
-                      "example_image_urls" : '["http://s3.amazonaws.com/visipedia/images/1001/medium.jpg","http://s3.amazonaws.com/visipedia/images/1002/medium.jpg"]'})
+# NOTE: you must format them EXACTLY like you want them to appear in the 
+#       javascript code!
+prm = vis.yaml_field({"object_name" : "'Foo'",
+                      "wikipedia_url" : "'http://en.wikipedia.org/wiki/Foo'",
+                      "example_image_urls" : '["http://s3.amazonaws.com/visipedia/images/1001/small.jpg","http://s3.amazonaws.com/visipedia/images/1002/small.jpg"]'})
 # create the instance
 resp = vc.call('annotation_instances', 'create',
                params={'annotation_type_version_id' : annotation_type_version_id,
