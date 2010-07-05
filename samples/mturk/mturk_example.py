@@ -45,11 +45,7 @@ image_ids = [[4005, 4006, 4007, 4008, 4009, 4010],
 hit_ids = []
 for id_set in image_ids:
     image_ids_str = "[" + ",".join([str(id) for id in id_set]) + "]"
-    image_thumbs_str = "[" + \
-        ",".join([("'http://s3.amazonaws.com/visipedia/images/%d/thumb.jpg'" % id) \
-        for id in id_set]) + "]"
-    params = vis.yaml_field({ "image_ids" : image_ids_str,
-                              "image_thumbs" : image_thumbs_str })
+    params = vis.yaml_field({ "image_ids" : image_ids_str })
     resp = vc.call('hits', 'create', 
                    params={'hit_type_id' : hit_type_id,
                            'annotation_instance_id' : ANN_INST_ID,
