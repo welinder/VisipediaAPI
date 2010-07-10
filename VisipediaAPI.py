@@ -144,11 +144,15 @@ def wrap_params(params, controller, action):
         'annotation_type_versions' : ['annotation_type_version'],
         'annotation_instances' : ['annotation_instance'],
         'hit_types' : ['hit_type', { 'create' : ['register'] }],
-        'hits' : ['hit', { 'create' : ['register'] }],
+        'hits' : ['hit', { 'create' : ['register'], 
+                           'extend' : ['max_assignments_increment',
+                                       'expiration_increment_in_seconds']}],
         'searches' : ['search'],
         'search_queries' : ['search_query'],
         'api_keys' : ['api_key'],
-        'qualification_types' : ['qualification_type'],
+        'qualification_types' : ['qualification_type', 
+                                 { 'create' : ['register'] }],
+        'worker_qualifications' : ['worker_qualification'],
     }
     if action and wrappers.has_key(controller):
         wrapper = wrappers[controller][0]
