@@ -149,6 +149,8 @@ def wrap_params(params, controller, action):
                                        'expiration_increment_in_seconds']}],
         'searches' : ['search'],
         'search_queries' : ['search_query'],
+        'wikipedia_articles' : ['wikipedia_article'],
+        'objs' : ['obj', { 'create' : ['obj_id'] }],
         'api_keys' : ['api_key'],
         'qualification_types' : ['qualification_type', 
                                  { 'create' : ['register'] }],
