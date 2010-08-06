@@ -79,7 +79,7 @@ class Connection:
         if not action: method = "GET"
         elif(action == 'show' or action == 'list'): method = "GET"
         elif(action == 'update'): method = "PUT"
-        elif(action == 'delete'): method = "DELETE"
+        elif(action == 'destroy'): method = "DELETE"
             
         return self.http_connect(method, controller, action,
                                  id, params, files)
