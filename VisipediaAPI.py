@@ -155,6 +155,8 @@ def wrap_params(params, controller, action):
         'qualification_types' : ['qualification_type', 
                                  { 'create' : ['register'] }],
         'worker_qualifications' : ['worker_qualification'],
+        'features' : ['feature'],
+        'image_features' : ['image_feature'],
     }
     if action and wrappers.has_key(controller):
         wrapper = wrappers[controller][0]
