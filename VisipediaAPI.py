@@ -20,7 +20,7 @@ class Connection:
             conf = yaml.load(open(access_key))
             access_key = conf['access_key']
             if conf.has_key('url'): url = conf['url']
-            if conf.has_key('verbosity'): url = conf['verbosity']
+            if conf.has_key('verbosity'): verbosity = conf['verbosity']
         # set member vars
         self.base_url = url
         self.access_key = access_key
