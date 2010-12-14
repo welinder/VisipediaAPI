@@ -93,7 +93,13 @@ class Connection:
         try:
             tree = ElementTree.XML(response)
             if(tree.tag == 'response' and tree[0].tag != 'err'):
-                tree = tree[0]
+                if len(tree)==0:
+                    if not tree.attrib.has_key('status'):
+                        resp.status = 'ERROR'
+                    resp.content = ''
+                    return resp
+                else:
+                    tree = tree[0]
             if(tree[0].tag == 'err'):
                 resp.status = 'ERROR'
                 for child in tree.getchildren():
