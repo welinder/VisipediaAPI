@@ -5,6 +5,7 @@ import StringIO
 import yaml
 import zipfile
 import glob
+import time
 from xml.etree import ElementTree
 
 class Response:
@@ -14,7 +15,7 @@ class Connection:
     
     def __init__(self, access_key,
                  url='http://173.203.120.143',
-                 verbosity=1):
+                 verbosity=1, max_tries=5):
         # allow the use of a configuration yaml file
         if access_key[-4:] == 'yaml':
             conf = yaml.load(open(access_key))
@@ -26,6 +27,7 @@ class Connection:
         self.access_key = access_key
         self.verbosity = verbosity
         self.cookie_file_name = 'cookie.txt'
+        self.max_tries = max_tries
     
     def http_connect(self, http_type, controller, action,
                      id=None, params={}, files=None):
@@ -47,21 +49,32 @@ class Connection:
             params['access_key'] = self.access_key
         args = urllib.urlencode(params)
         res = StringIO.StringIO()
-        crl = pycurl.Curl()
-        crl.setopt(pycurl.FOLLOWLOCATION, 1)
-        crl.setopt(pycurl.COOKIEFILE, self.cookie_file_name)
-        crl.setopt(pycurl.COOKIEJAR, self.cookie_file_name)
-        crl.setopt(pycurl.CUSTOMREQUEST, http_type)
-        if(http_type == "POST" and not files):
-            crl.setopt(pycurl.POSTFIELDS, args)
-        elif files:
-            crl.setopt(pycurl.HTTPPOST, files)
-        full_url = url + "?" + args if(http_type != "POST" or files) else url
-        crl.setopt(pycurl.URL, full_url)
-        crl.setopt(pycurl.WRITEFUNCTION, res.write)
-        crl.perform()
-        status = crl.getinfo(pycurl.HTTP_CODE)
-        crl.close()
+        tries = 0
+        while tries < self.max_tries:
+            try:
+                crl = pycurl.Curl()
+                crl.setopt(pycurl.FOLLOWLOCATION, 1)
+                crl.setopt(pycurl.COOKIEFILE, self.cookie_file_name)
+                crl.setopt(pycurl.COOKIEJAR, self.cookie_file_name)
+                crl.setopt(pycurl.CUSTOMREQUEST, http_type)
+                if(http_type == "POST" and not files):
+                    crl.setopt(pycurl.POSTFIELDS, args)
+                elif files:
+                    crl.setopt(pycurl.HTTPPOST, files)
+                full_url = url + "?" + args \
+                           if(http_type != "POST" or files) else url
+                crl.setopt(pycurl.URL, full_url)
+                crl.setopt(pycurl.WRITEFUNCTION, res.write)
+                crl.perform()
+                status = crl.getinfo(pycurl.HTTP_CODE)
+                crl.close()
+                tries = self.max_tries
+                break
+            except pycurl.error, e:
+                tries += 1
+                print "Error %s, retry %d/%d." % \
+                      (str(e), tries, self.max_tries)
+                time.sleep(5)
         if(status < 200 or status >= 300):
             print "HTTP " + http_type + " " + full_url + \
                   " returned " + str(status) + "\n" + res.getvalue()
